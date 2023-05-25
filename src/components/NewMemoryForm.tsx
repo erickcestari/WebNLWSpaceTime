@@ -28,10 +28,6 @@ export function NewMemoryForm() {
 
       coverUrl = uploadResponse.data.fileUrl
     }
-    console.log('coverUrl', coverUrl)
-    console.log('content', formData.get('content'))
-
-    console.log(formData)
 
     await api.post(
       '/memories',
