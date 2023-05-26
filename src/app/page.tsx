@@ -5,14 +5,7 @@ import { ArrowRight } from 'lucide-react'
 import { cookies } from 'next/headers'
 import Image from 'next/image'
 import Link from 'next/link'
-
-interface Memory {
-  coverUrl: string
-  content: string
-  excerpt: string
-  id: string
-  createdAt: string
-}
+import { Memory } from '@/types/memory'
 
 export default async function Home() {
   const isAuthenticated = cookies().has('token')

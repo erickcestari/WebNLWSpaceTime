@@ -1,14 +1,37 @@
 'use client'
 
+import { Memory } from '@/types/memory'
 import { ChangeEvent, useState } from 'react'
 
-export function MediaPicker() {
-  const [preview, setPreview] = useState<string | null>(null)
-  const [isVideo, setIsVideo] = useState(false)
-  const [isImage, setIsImage] = useState(false)
+interface MediaPickerProps {
+  memory?: Memory
+}
+
+export function MediaPicker(props: MediaPickerProps) {
+  const { memory } = props
+  const [nameInput, setNameInput] = useState(
+    memory?.coverUrl ? 'noChange' : 'coverUrl',
+  )
+  const [preview, setPreview] = useState<string | null>(
+    memory?.coverUrl ? memory.coverUrl : null,
+  )
+
+  const [isVideo, setIsVideo] = useState(
+    memory ? memory?.coverUrl.endsWith('.mp4') : false,
+  )
+  const [isImage, setIsImage] = useState(
+    memory
+      ? memory?.coverUrl.endsWith('.jpeg') ||
+          memory?.coverUrl.endsWith('.jpg') ||
+          memory?.coverUrl.endsWith('.png')
+      : false,
+  )
+
+  console.log(nameInput)
 
   function onFileSelected(event: ChangeEvent<HTMLInputElement>) {
     const { files } = event.target
+    setNameInput('coverUrl')
 
     if (!files) {
       return
@@ -29,7 +52,7 @@ export function MediaPicker() {
       <input
         type="file"
         id="midia"
-        name="coverUrl"
+        name={nameInput}
         onChange={onFileSelected}
         accept="image/*, video/*"
         className="invisible h-0 w-0"

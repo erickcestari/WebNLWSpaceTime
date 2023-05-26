@@ -1,18 +1,25 @@
 'use client'
 import { Camera } from 'lucide-react'
 import { MediaPicker } from './MediaPicker'
-import { FormEvent } from 'react'
+import { FormEvent, useState } from 'react'
 import { api } from '@/lib/api'
 import Cookie from 'js-cookie'
 import { useRouter } from 'next/navigation'
+import { Memory } from '@/types/memory'
 
-export function NewMemoryForm() {
+interface EditMemortFormProps {
+  memory: Memory
+}
+
+export function EditMemoryForm(props: EditMemortFormProps) {
+  const { memory } = props
+  const [content, setContent] = useState(memory.content)
+
   const router = useRouter()
-  async function handleCreateMemory(event: FormEvent<HTMLFormElement>) {
+  async function handleEditMemory(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
 
     const formData = new FormData(event.currentTarget)
-    console.log(Array.from(formData.entries()))
 
     const fileToUpload = formData.get('coverUrl') as File
 
@@ -20,17 +27,19 @@ export function NewMemoryForm() {
 
     const token = Cookie.get('token')
 
-    if (fileToUpload.name !== '') {
+    if (fileToUpload) {
       const uploadFormData = new FormData()
       uploadFormData.set('file', fileToUpload)
 
       const uploadResponse = await api.post('/upload', uploadFormData)
 
       coverUrl = uploadResponse.data.fileUrl
+    } else {
+      coverUrl = memory.coverUrl
     }
 
-    await api.post(
-      '/memories',
+    await api.put(
+      `/memories/${memory.id}`,
       {
         coverUrl,
         content: formData.get('content'),
@@ -47,7 +56,7 @@ export function NewMemoryForm() {
   }
 
   return (
-    <form onSubmit={handleCreateMemory} className="flex flex-1 flex-col gap-2">
+    <form onSubmit={handleEditMemory} className="flex h-full flex-col gap-2">
       <div className="flex items-center gap-4">
         <label
           htmlFor="midia"
@@ -65,17 +74,18 @@ export function NewMemoryForm() {
             type="checkbox"
             id="isPublic"
             name="isPublic"
-            value="true"
-            defaultChecked={true}
+            defaultChecked={memory.isPublic}
             className="botder-gray-400 h-4 w-4 rounded bg-gray-700 text-purple-500 focus:ring-0"
           />
           Make Public Memory
         </label>
       </div>
-      <MediaPicker />
+      <MediaPicker memory={memory} />
       <textarea
         name="content"
         spellCheck={false}
+        value={content}
+        onChange={(e) => setContent(e.target.value)}
         className="flex-1 resize-none rounded border-0 bg-transparent p-0 text-lg leading-relaxed text-gray-100 placeholder:text-gray-400 focus:ring-0"
         placeholder="Feel free to add photos, videos and stories about that experience you want to remember forever. It's your time capsule! 🚀"
       />
