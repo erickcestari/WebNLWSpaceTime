@@ -12,7 +12,6 @@ export function NewMemoryForm() {
     event.preventDefault()
 
     const formData = new FormData(event.currentTarget)
-    console.log(Array.from(formData.entries()))
 
     const fileToUpload = formData.get('coverUrl') as File
 
