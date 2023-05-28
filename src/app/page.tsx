@@ -35,13 +35,21 @@ export default async function Home() {
           <time className="flex items-center gap-2 text-sm text-gray-100 before:h-px before:w-5 before:bg-gray-50">
             {dayjs(memory.createdAt).format('DD MMMM YYYY')}
           </time>
-          <Image
-            src={memory.coverUrl}
-            width={800}
-            height={280}
-            alt="Memory Cover"
-            className="aspect-video w-full object-cover"
-          />
+          {memory.coverUrl.endsWith('.mp4') ? (
+            <video
+              src={memory.coverUrl}
+              className="aspect-video w-full object-cover"
+              controls
+            />
+          ) : (
+            <Image
+              src={memory.coverUrl}
+              width={800}
+              height={280}
+              alt="Memory Cover"
+              className="aspect-video w-full object-cover"
+            />
+          )}
           <p className="text-lg leading-relaxed text-gray-100">
             {memory.excerpt}
           </p>

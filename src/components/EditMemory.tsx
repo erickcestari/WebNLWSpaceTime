@@ -2,11 +2,14 @@
 
 import { Memory } from '@/types/memory'
 import dayjs from 'dayjs'
-import { ArrowLeft, Edit, Eye } from 'lucide-react'
+import { ArrowLeft, Edit, Eye, Trash } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useState } from 'react'
 import { EditMemoryForm } from './EditMemoryForm'
+import { api } from '@/lib/api'
+import { useRouter } from 'next/navigation'
+import Cookies from 'js-cookie'
 
 interface propsEdit {
   memory: Memory
@@ -15,7 +18,19 @@ interface propsEdit {
 
 const EditMemory = (props: propsEdit) => {
   const { memory } = props
+  const router = useRouter()
+  const token = Cookies.get('token')
+  console.log(token)
 
+  const handleClickDelete = () => {
+    api.delete(`/memories/${memory.id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+
+    router.push('/')
+  }
   const [edit, setEdit] = useState(false)
 
   return (
@@ -28,22 +43,33 @@ const EditMemory = (props: propsEdit) => {
           <ArrowLeft className="h-4 w-4" />
           Go back
         </Link>
-        <div
-          onClick={() => setEdit(!edit)}
-          className="flex cursor-pointer flex-row text-sm text-gray-200 hover:text-gray-100"
-        >
-          {edit ? (
-            <div className="flex flex-row items-center gap-2">
+
+        {edit ? (
+          <div className="flex flex-row gap-5">
+            <div
+              onClick={() => handleClickDelete()}
+              className="flex cursor-pointer flex-row items-center gap-2 text-gray-200 hover:text-red-400"
+            >
+              Delete
+              <Trash className="h-4 w-4" />
+            </div>
+            <div
+              onClick={() => setEdit(!edit)}
+              className="flex cursor-pointer flex-row items-center gap-2 text-sm text-gray-200 hover:text-gray-100"
+            >
               View
               <Eye className="h-4 w-4" />
             </div>
-          ) : (
-            <div className="flex flex-row items-center gap-2">
-              Edit
-              <Edit className="h-4 w-4" />
-            </div>
-          )}
-        </div>
+          </div>
+        ) : (
+          <div
+            onClick={() => setEdit(!edit)}
+            className="flex  cursor-pointer flex-row  items-center gap-2 text-sm text-gray-200 hover:text-gray-100"
+          >
+            Edit
+            <Edit className="h-4 w-4" />
+          </div>
+        )}
       </div>
       {edit ? (
         <EditMemoryForm memory={memory} />

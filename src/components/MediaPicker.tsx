@@ -27,6 +27,8 @@ export function MediaPicker(props: MediaPickerProps) {
       : false,
   )
 
+  console.log(preview)
+
   function onFileSelected(event: ChangeEvent<HTMLInputElement>) {
     const { files } = event.target
     setNameInput('coverUrl')
